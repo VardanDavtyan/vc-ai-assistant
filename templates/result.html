@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>response</title>
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+    <div class="resultsContainer">
+        <h1>Result</h1>
+        <p>The entered text is: {{ text }}</p>
+        <hr>
+        <p>The entered text is: {{ conclusion }}</p>
+        <a href="/">Go Back</a>
+    </div>
+
+</body>
+</html>
