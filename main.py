@@ -24,6 +24,7 @@ async def get_similarity(url):
 
     #db_data = await db.get_all_data()
 
+
     conclusion = await return_conclusion(data_from_website, db_data)
 
     print(data_from_website)
@@ -41,7 +42,7 @@ async def get_similarity(url):
 async def read_root(request: Request):
     global db, db_data
     db = Database(CONNECTION_STRING, 'VCDataset', 'db')
-    db_data = await db.get_all_data()
+    #db_data = await db.get_all_data()
     print(db_data)
     return templates.TemplateResponse("index.html", {"request": request})
 
