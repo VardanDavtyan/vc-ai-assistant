@@ -33,6 +33,7 @@
 import logging
 import motor.motor_asyncio
 from pymongo.server_api import ServerApi
+from fastapi import HTTPException, status
 
 class Database:
     def __init__(self, uri, db_name, collection_name):
@@ -56,8 +57,14 @@ class Database:
 
     async def get_all_data(self):
         """Retrieves all documents from the collection."""
-        cursor = self.collection.find({})
-        return [document async for document in cursor]
+        try:
+            cursor = self.collection.find({})
+            return [document async for document in cursor]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{e}",
+            )
 
     def __del__(self):
         """Destructor to close the MongoDB client."""
