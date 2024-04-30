@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from database_actions import Database
-from ai_functionality import get_data_from_website, return_conclusion
+from ai_functionality import get_data_from_website, return_conclusion, convert_data_to_vector
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
