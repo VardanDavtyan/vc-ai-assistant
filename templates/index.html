@@ -4,14 +4,33 @@
     <title>assistant app</title>
     <link rel="shortcut icon" href="">
     <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <style>
+        /* CSS for hiding the loading message initially */
+        #loadingMessage {
+            display: none;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("submitBtn").addEventListener("click", function() {
+                // Hide the submit button
+                document.getElementById("submitBtn").style.display = "none";
+                // Show the loading message
+                document.getElementById("loadingMessage").style.display = "block";
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="homecontainer">
-        <form action="/submit/" method="post">
+        <form action="/response/" method="post">
             <label for="text">Enter website url:</label><br>
             <input type="text" id="text" name="text"><br>
-            <input type="submit" value="Submit">
+            <!-- Submit Button -->
+            <input type="submit" id="submitBtn" value="Submit">
         </form>
     </div>
+    <!-- Loading Message -->
+    <p id="loadingMessage">Processing your Input, Please wait...</p>
 </body>
 </html>

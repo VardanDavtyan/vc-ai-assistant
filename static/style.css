@@ -51,7 +51,6 @@ input[type="submit"]:hover {
 .resultsContainer {
     width: 50%; /* Adjust the width as needed */
     margin: 0 auto; /* This centers the container horizontally */
-    text-align: center; /* This centers the text elements */
     margin-top: 10px;
 }
 
@@ -73,4 +72,9 @@ input[type="submit"]:hover {
 
 .resultsContainer a:hover {
   background-color: #003076;
+}
+
+#loadingMessage {
+    padding: 20px;
+    margin-left: 40%;
 }
