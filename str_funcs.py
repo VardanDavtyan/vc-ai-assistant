@@ -10,7 +10,9 @@ def convert_output_to_dict(data_from_website: str):
     start_index = data_from_website.find('{')
     end_index = data_from_website.rfind('}') + 1
     json_data = data_from_website[start_index:end_index]
-    return lowercase_keys(json.loads(json_data))
+    data_dict = lowercase_keys(json.loads(json_data))
+    data_dict["vc name"] = data_dict["vc name"] if "vc name" in data_dict else "Unknown"
+    return data_dict
 
 
 def remove_comments(json_str):

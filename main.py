@@ -4,8 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from database_actions import Database
-from ai_functionality import get_data_from_website, return_conclusion, convert_data_to_vector
-from str_funcs import  convert_output_to_dict, add_br_to_text, replace_tabs_with_spaces
+from ai_functionality import get_data_from_website_and_vector_embedding, return_conclusion, convert_data_to_vector
+from str_funcs import convert_output_to_dict, add_br_to_text, replace_tabs_with_spaces
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -15,25 +15,28 @@ CONNECTION_STRING = 'mongodb+srv://vardandavtyan:claglavolox_88888@vcdataset.qnz
 
 async def get_similarity(url):
 
-    data_from_website = await get_data_from_website(url)
-
+    #getting data from our website url input
+    data_from_website, vector_embedding = await get_data_from_website_and_vector_embedding(url)
     data_from_website_dict = convert_output_to_dict(data_from_website)
 
-
+    #getting db data
     db = Database(CONNECTION_STRING, 'VCDataset', 'db')
-    db_data = await db.get_all_data()
-
     vectordb = Database(CONNECTION_STRING, 'VCDataset', 'vectordb')
-    vectordb_data = await vectordb.get_all_data()
-    vector_data = { "vc name": data_from_website_dict["vc name"] if "vc name" in data_from_website_dict else "Not provided" }
-    vector_data["vector"] = await convert_data_to_vector(data_from_website_dict)
 
+    #retrieving data from databases, if the data contains data entered by our user, we do not take it
+    db_data = await db.get_data_except_element_which_is_in_db(data_from_website_dict["vc name"])
+    vectordb_data = await vectordb.get_data_except_element_which_is_in_db(data_from_website_dict["vc name"])
+
+    vector_data = { "vc name": data_from_website_dict["vc name"] }
+    vector_data["vector"] = vector_embedding
 
     conclusion = await return_conclusion(data_from_website_dict, db_data, vector_data, vectordb_data)
 
-    #update data on database
-    await db.add_one(data_from_website_dict)
-    await vectordb.add_one(vector_data)
+    #if the user entered data is not in the database, we need to add it to the database
+    entered_data_is_in_db = await db.check_is_instance_in_db(data_from_website_dict["vc name"])
+    if not entered_data_is_in_db:
+        await db.add_one(data_from_website_dict)
+        await vectordb.add_one(vector_data)
 
     return {
         "data": replace_tabs_with_spaces(add_br_to_text(data_from_website)),

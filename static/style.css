@@ -75,6 +75,7 @@ input[type="submit"]:hover {
 }
 
 #loadingMessage {
+    display: none
     padding: 20px;
     margin-left: 40%;
 }

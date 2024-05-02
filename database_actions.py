@@ -34,6 +34,32 @@ class Database:
                 detail=f"{e}",
             )
 
+    async def get_data_except_element_which_is_in_db(self, value):
+        """Retrieves all documents except the one with the specified key-value pair."""
+        try:
+            document = await self.collection.find_one({"vc name": value})
+            if document and document["vc name"] != "Unknown":
+                cursor = self.collection.find({"vc name": {"$ne": value}})
+                return [document async for document in cursor]
+            else:
+                return await self.get_all_data()
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{e}",
+            )
+
+    async def check_is_instance_in_db(self, value):
+        """Checks if a certain key has a certain value in the collection."""
+        try:
+            document = await self.collection.find_one({"vc name": value})
+            return document is not None
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{e}",
+            )
+
     def __del__(self):
         """Destructor to close the MongoDB client."""
         self.client.close()
