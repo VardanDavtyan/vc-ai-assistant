@@ -25,7 +25,7 @@ async def get_similarity(url):
 
     vectordb = Database(CONNECTION_STRING, 'VCDataset', 'vectordb')
     vectordb_data = await vectordb.get_all_data()
-    vector_data = { "vc name": data_from_website_dict["vc name"] }
+    vector_data = { "vc name": data_from_website_dict["vc name"] if "vc name" in data_from_website_dict else "Not provided" }
     vector_data["vector"] = await convert_data_to_vector(data_from_website_dict)
 
 
