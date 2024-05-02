@@ -32,8 +32,8 @@ async def get_similarity(url):
     conclusion = await return_conclusion(data_from_website_dict, db_data, vector_data, vectordb_data)
 
     #update data on database
-    #await db.add_one(data_from_website_dict)
-    #await vectordb.add_one(vector_data)
+    await db.add_one(data_from_website_dict)
+    await vectordb.add_one(vector_data)
 
     return {
         "data": replace_tabs_with_spaces(add_br_to_text(data_from_website)),
