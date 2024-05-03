@@ -32,7 +32,7 @@ async def convert_data_to_vector(data):
         logging.error(e)
         raise e
 
-async def compare_data_with_database_data(new_data, most_similars):
+async def compare_data_with_database_data(new_data, most_similars, similar_vc_names):
     try:
         api = replicate.Client(api_token="r8_SDXinLdJV987RK41F2gV29Gvb6Qle6Q0poeqE")
         output = api.run(
@@ -40,9 +40,9 @@ async def compare_data_with_database_data(new_data, most_similars):
             input={"prompt":
                         "our programm got this json data " +
                         f"""{new_data}""" +
-                        " and for this data 3 most similar data's from database collection is " +
-                        f"""{most_similars}""" +
-                        ", compare gathered data and this 3 datas from collection, " +
+                        " and for this data 3 most similar data from database collection is " +
+                        f"""{most_similars}.""" + f"""Most similar data is by this sequence: {similar_vc_names}.""" +
+                        "Please compare gathered data and this 3 data from collection(Please compare activities made by this companies), " +
                         "please compare and analyze only with values and other relationships, not with keys, " +
                         "and return some simple conclusion, " +
                         "and extract as much information as you can from all data that you have"
@@ -98,7 +98,7 @@ async def return_conclusion(new_data, db_data, new_vector_data, vectordb_data):
 
         vc_names_to_filter = [vc_name for vc_name, _ in similar_vc_names]
         filtered_data = filter_data_by_vc_names(db_data, vc_names_to_filter)
-        conclusion = await compare_data_with_database_data(new_data, filtered_data)
+        conclusion = await compare_data_with_database_data(new_data, filtered_data, similar_vc_names)
         output += conclusion
 
         return output
