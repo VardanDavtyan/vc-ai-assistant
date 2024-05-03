@@ -60,6 +60,24 @@ class Database:
                 detail=f"{e}",
             )
 
+    async def update_one(self, value, new_data):
+        """Updates a document with the specified key-value pair."""
+        try:
+            # Find the document with the specified key-value pair
+            document = await self.collection.find_one({"vc name": value})
+            if document:
+                # Update the document with new_data
+                await self.collection.update_one({"_id": document["_id"]}, {"$set": new_data})
+                return True
+            else:
+                # Document not found
+                return False
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{e}",
+            )
+
     def __del__(self):
         """Destructor to close the MongoDB client."""
         self.client.close()

@@ -20,26 +20,29 @@ async def get_similarity(url):
     #getting data from our website url input
     data_from_website, vector_embedding = await get_data_from_website_and_vector_embedding(url)
     data_from_website_dict = convert_output_to_dict(data_from_website)
+    vc_company_name = data_from_website_dict["vc name"]
 
     #getting db data
     db = Database(CONNECTION_STRING, 'VCDataset', 'db')
-    print(db)
     vectordb = Database(CONNECTION_STRING, 'VCDataset', 'vectordb')
 
     #retrieving data from databases, if the data contains data entered by our user, we do not take it
-    db_data = await db.get_data_except_element_which_is_in_db(data_from_website_dict["vc name"])
-    vectordb_data = await vectordb.get_data_except_element_which_is_in_db(data_from_website_dict["vc name"])
+    db_data = await db.get_data_except_element_which_is_in_db(vc_company_name)
+    vectordb_data = await vectordb.get_data_except_element_which_is_in_db(vc_company_name)
 
-    vector_data = { "vc name": data_from_website_dict["vc name"] }
+    vector_data = { "vc name": vc_company_name }
     vector_data["vector"] = vector_embedding
 
     conclusion = await return_conclusion(data_from_website_dict, db_data, vector_data, vectordb_data)
 
-    #if the user entered data is not in the database, we need to add it to the database
-    entered_data_is_in_db = await db.check_is_instance_in_db(data_from_website_dict["vc name"])
+    #if the user entered data is not in the database, we need to add it to the database, otherwise replace with new data
+    entered_data_is_in_db = await db.check_is_instance_in_db(vc_company_name)
     if not entered_data_is_in_db:
         await db.add_one(data_from_website_dict)
         await vectordb.add_one(vector_data)
+    else:
+        await db.update_one(vc_company_name, data_from_website_dict)
+        await vectordb.update_one(vc_company_name, vector_data)
 
     return {
         "data": replace_tabs_with_spaces(add_br_to_text(data_from_website)),
