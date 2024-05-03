@@ -13,7 +13,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-CONNECTION_STRING = os.environ.get("MONGODB_API_TOKEN")
+CONNECTION_STRING = 'mongodb+srv://vardandavtyan:claglavolox_88888@vcdataset.qnzmfqi.mongodb.net/?retryWrites=true&w=majority&appName=VCDataset'#os.environ.get("MONGODB_API_TOKEN")
 
 async def get_similarity(url):
 
@@ -23,6 +23,7 @@ async def get_similarity(url):
 
     #getting db data
     db = Database(CONNECTION_STRING, 'VCDataset', 'db')
+    print(db)
     vectordb = Database(CONNECTION_STRING, 'VCDataset', 'vectordb')
 
     #retrieving data from databases, if the data contains data entered by our user, we do not take it

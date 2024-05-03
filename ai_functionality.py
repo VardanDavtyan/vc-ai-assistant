@@ -7,23 +7,27 @@ import json
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+API_KEY = os.environ.get('REPLICATE_API_TOKEN')
+api = replicate.Client(api_token=API_KEY)
 
 def get_data_from_plain_text(plain_text: str):
-    api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
-    output = api.run(
-        "meta/meta-llama-3-70b-instruct",
-        input= {"prompt":
-                        f"""{plain_text}""" +
-                        " Your task is to Extract the following information and show it to the user as a JSON object: VC name, contacts, industries that they invest in, investment rounds that they participate/lead." +
-                        " please return only json object"
-                }
-    )
-    return ''.join(output)
+    try:
+        output = api.run(
+            "meta/meta-llama-3-70b-instruct",
+            input= {"prompt":
+                            f"""{plain_text}""" +
+                            " Your task is to Extract the following information and show it to the user as a JSON object: VC name, contacts, industries that they invest in, investment rounds that they participate/lead." +
+                            " please return only json object"
+                    }
+        )
+        return ''.join(output)
+    except Exception as e:
+        logging.error(e)
+        raise e
 
 #TODO
 async def convert_data_to_vector(data):
     try:
-        api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
         output = api.run(
             "nateraw/bge-large-en-v1.5:9cf9f015a9cb9c61d1a2610659cdac4a4ca222f2d3707a68517b18c198a9add1",
             input={"texts": json.dumps([data]) }
@@ -35,7 +39,6 @@ async def convert_data_to_vector(data):
 
 async def compare_data_with_database_data(new_data, most_similars, similar_vc_names):
     try:
-        api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
         output = api.run(
             "meta/meta-llama-3-70b-instruct",
             input={"prompt":
