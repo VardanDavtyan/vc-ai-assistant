@@ -1,3 +1,4 @@
+import os
 import logging
 from scrapper import scrap_website_data
 
@@ -8,7 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def get_data_from_plain_text(plain_text: str):
-    api = replicate.Client(api_token="r8_SDXinLdJV987RK41F2gV29Gvb6Qle6Q0poeqE")
+    api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
     output = api.run(
         "meta/meta-llama-3-70b-instruct",
         input= {"prompt":
@@ -22,7 +23,7 @@ def get_data_from_plain_text(plain_text: str):
 #TODO
 async def convert_data_to_vector(data):
     try:
-        api = replicate.Client(api_token="r8_SDXinLdJV987RK41F2gV29Gvb6Qle6Q0poeqE")
+        api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
         output = api.run(
             "nateraw/bge-large-en-v1.5:9cf9f015a9cb9c61d1a2610659cdac4a4ca222f2d3707a68517b18c198a9add1",
             input={"texts": json.dumps([data]) }
@@ -34,7 +35,7 @@ async def convert_data_to_vector(data):
 
 async def compare_data_with_database_data(new_data, most_similars, similar_vc_names):
     try:
-        api = replicate.Client(api_token="r8_SDXinLdJV987RK41F2gV29Gvb6Qle6Q0poeqE")
+        api = replicate.Client(api_token=os.environ.get('REPLICATE_API_TOKEN'))
         output = api.run(
             "meta/meta-llama-3-70b-instruct",
             input={"prompt":
